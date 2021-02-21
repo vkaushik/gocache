@@ -33,11 +33,19 @@ func (c *Cache) Get(key interface{}) (value interface{}, cacheFound bool) {
 // Set caches the key, value pair provided.
 // TimeComplexity: O(1), SpaceComplexity: O(1)
 func (c *Cache) Set(key, value interface{}) {
+	existingNode, keyIsPresent := c.keyToCacheNode[key]
+	if keyIsPresent {
+		c.nodes.markMostRecentlyUsed(existingNode)
+		existingNode.value = value
+		return
+	}
+
 	if len(c.keyToCacheNode) == c.capacity { // cache is full
 		node := c.nodes.removeLeastRecentlyUsed() // LRU eviction
 		delete(c.keyToCacheNode, node.key)
 		node.free() // to avoid memory leak
 	}
+
 	node := newCacheNode(key, value)
 	c.keyToCacheNode[key] = node
 	c.nodes.append(node)

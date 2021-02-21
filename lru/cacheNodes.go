@@ -30,6 +30,7 @@ func (c *cacheNodes) markMostRecentlyUsed(node *cacheNode) {
 	node.next = nil
 	node.prev = c.last
 	c.last.next = node
+	c.last = node
 }
 
 // removeLeastRecentlyUsed deletes the node from front of cacheNodes and returns it
